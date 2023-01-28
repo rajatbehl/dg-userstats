@@ -1,0 +1,119 @@
+spring:
+   application:
+      name: User stats Service
+   
+   jpa:
+    database: postgresql
+    show-sql: true
+   datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 20
+   read-datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 20
+      
+   aws:
+    secretmanager:
+     writeSecretName: prod/Postgres
+     readSecretName: prodRead/Postgres
+     region: ap-south-1
+
+pubsub:
+   namespace: 10.0.33.44:9092,10.0.35.180:9093
+   registration:
+      topic: signup
+      group-id: signup-userstats-prod-group
+      consumer-count: 4
+   deposits:
+      topic: deposit
+      group-id: deposit-userstats-prod-group
+      consumer-count: 4
+   deposits-initiated:
+      topic: depositinitiated
+      group-id: depositinitiated-userstats-prod-group
+      consumer-count: 4
+   cashstats:
+      topic: usercashstats
+      group-id: usercashstats-userstats-prod-group
+      consumer-count: 4
+   withdrawal:
+      topic: withdrawal
+      group-id: withdrawal-userstats-prod-group
+      consumer-count: 4
+   first-deposit:
+      topic: firstdeposit
+   first-game:
+      topic: firstcashgame
+   retention-event:
+      topic: retention
+   applaunch-event:
+      topic: applaunch
+      group-id: applauch-event-prod-group
+      consumer-count: 4
+   update-balance:
+      topic: usercashbalance
+      group-id: usercashbalance-event-prod-group
+      consumer-count: 8
+      
+server:
+   port: 3152
+
+management:
+  endpoint:
+    health:
+      group:
+        liveness:
+          include:
+          - '*'
+      probes:
+        enabled: true
+   
+consul:
+   url: http://10.0.0.183:8500
+   path: UserStats/
+   
+db-async-executor:
+   pool-size:
+      core: 10
+      max: 100
+      
+event-async-executor:
+   pool-size:
+     core: 10
+     max: 100
+
+webclient:
+  maxConnections: 500
+  maxIdleTime: 20
+  maxLifeTime: 60
+  pendingAcquireTimeout: 60
+  evictInBackground: 120
+
+endpoints:
+  wallet:
+    credit: http://172.20.0.25:3153/v1/wallets/credit
+     
+suspicious-user:
+  threshold:
+    pnl: 5
+    game-play-pnl: 10
+    last-manual-withdrawal: 72
+    depositFailure: 0.15
+    
+support:
+  qualifying-rummy-rake: 500
+  number: +91-0123456789
+
+streak:
+  login:
+    days: 7
+    incentive:
+      deposit: 50
+      withdrawal: 0
+      promo-bonus: 0
+      locked-bonus: 0
+      max: 5000

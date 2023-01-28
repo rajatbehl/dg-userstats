@@ -1,0 +1,115 @@
+spring:
+   application:
+      name: User stats Service
+   
+   jpa:
+    database: postgresql
+    show-sql: true
+   datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 20
+   read-datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 3
+      maximum-pool-size: 20
+   
+   aws:
+    secretmanager:
+     writeSecretName: dev/Postgres
+     readSecretName: dev/Postgres
+     region: ap-south-1
+
+pubsub:
+   namespace: 172.31.45.75:9092,172.31.45.75:9093
+   registration:
+      topic: signup
+      group-id: signup-userstats-nonprod-group
+      consumer-count: 2
+   deposits:
+      topic: deposit
+      group-id: deposit-event-group
+      consumer-count: 2
+   deposits-initiated:
+      topic: depositinitiated
+      group-id: depositinitiated-userstats-nonprod-group
+      consumer-count: 2
+   cashstats:
+      topic: UserCashStats
+      group-id: usercashstats-event-group
+      consumer-count: 2
+   withdrawal:
+      topic: withdrawal
+      group-id: qa-withdrawal-event-group
+      consumer-count: 2
+   first-deposit:
+      topic: firstdeposit
+   first-game:
+      topic: firstcashgame
+   retention-event:
+      topic: retention
+   applaunch-event:
+      topic: applaunch
+      group-id: applauch-event-group
+      consumer-count: 4
+   update-balance:
+      topic: usercashbalance
+      group-id: usercashbalance-event-qa-group
+      consumer-count: 4
+      
+server:
+   port: 7072
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+   
+consul:
+   url: http://172.31.45.75:8500
+   path: UserStats/
+   
+db-async-executor:
+   pool-size:
+      core: 10
+      max: 100
+      
+event-async-executor:
+   pool-size:
+     core: 10
+     max: 100
+
+webclient:
+  maxConnections: 500
+  maxIdleTime: 20
+  maxLifeTime: 60
+  pendingAcquireTimeout: 60
+  evictInBackground: 120
+
+endpoints:
+  wallet:
+    credit: http://10.100.81.65:8096/v1/wallets/credit
+
+suspicious-user:
+  threshold:
+    pnl: 5
+    game-play-pnl: 10
+    last-manual-withdrawal: 72
+    depositFailure: 0.15
+    
+support:
+  qualifying-rummy-rake: 500
+  number: +91-0123456789
+
+streak:
+  login:
+    days: 7
+    incentive:
+      deposit: 50
+      withdrawal: 0
+      promo-bonus: 0
+      locked-bonus: 0
+      max: 5000
